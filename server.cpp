@@ -28,6 +28,14 @@ struct Point {
   long long lon; // longitude of the point
 };
 
+/**
+ * Gets the cost between two points based on distance using Manhattan distance.
+ *
+ * @param pt1 The first point
+ * @param pt2 The second point
+ * 
+ * @returns The cost between the two points
+ */
 long long manhattan(const Point& pt1, const Point& pt2) {
   long long manhattanDistance;
   manhattanDistance = abs(pt1.lat - pt2.lat) + abs(pt1.lon - pt2.lon);
@@ -39,10 +47,6 @@ long long manhattan(const Point& pt1, const Point& pt2) {
  * the given WDigraph object.
  * Store vertex coordinates in Point struct and map
  * each vertex to its corresponding Point struct.
- * PARAMETERS:
- * filename: name of the file describing a road network
- * graph: an instance of the weighted directed graph (WDigraph) class
- * points: a mapping between vertex identifiers and their coordinates
  *
  * @param filename The name of the file we want to open.
  * @param graph Instance of weighted directed graph class
@@ -84,11 +88,47 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
   }
 
   file.close();
- }
+}
+
+/**
+ * Finds the shortest path between two points in a given graph using Dijkstra's.
+ *
+ * @param start The starting point
+ * @param end The ending point
+ * @param g The weighted, directed graph to be considered
+ * @param map 
+ */
+stack<Point> calcPath(int start, int end, WDigraph &g, unordered_map<int, Point> &pointMap) {
+  // shortest path from start to end stored here
+  stack<Point> path; 
+
+  // stores search tree
+  unordered_map<int, PIL> tree; 
+
+  // generate search tree starting from the start node
+  dijkstra(g, start, tree); 
+
+  // trace the path, starting at the end node
+  int current = end;
+
+  // if the tree contains the end point, then a path exists that we will find.
+  if (tree.find(current) != tree.end()) {
+    // trace the path until it reachs the start, adding each point to the stack.
+    while (current != start) {
+      PIL next = tree[current];
+      path.push(pointMap[current]);
+      current = next.first; 
+    }
+
+    // add the start point to the top of the stack
+    path.push(pointMap[start]);
+  }
+
+  return path;
+}
 
 
-
-int main() {
+int main() { 
   WDigraph graph;
   unordered_map<int, Point> pointMap;
   readGraph(MAPNAME, graph, pointMap);
