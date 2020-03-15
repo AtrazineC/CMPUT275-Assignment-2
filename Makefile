@@ -1,20 +1,37 @@
+##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::
+    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##:
+##::
+    ##::    By:                 Benjamin Kong -- 1573684
+##::                            Lora Ma -------- 1570935
+    ##::
+##::        CMPUT 275:          Winter 2020
+    ##::    Assignment 2:       Part 1
+##::
+    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##:
+##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::
+
+
+
 CC = g++
 CFLAGS = -c -Wall -O2
 LFLAGS = -static
 
-PROGS = graph_concepts
-OBJS = graph_concepts.o digraph.o
+PROGS = server
+OBJS = server.o digraph.o dijkstra.o 
 
 .PHONY: clean
 
-graph_concepts: graph_concepts.o digraph.o
-	$(CC) graph_concepts.o digraph.o -o graph_concepts $(LFLAGS)
+server: server.o digraph.o dijkstra.o
+	$(CC) server.o  digraph.o dijkstra.o -o server $(LFLAGS)
 
-graph_concepts.o: graph_concepts.cpp digraph.h
-	$(CC) graph_concepts.cpp -o graph_concepts.o $(CFLAGS)
+server.o: server.cpp
+	$(CC) -c server.cpp -o server.o $(CFLAGS)
 
-digraph.o: digraph.cpp digraph.h
-	$(CC) digraph.cpp -o digraph.o $(CFLAGS)
+digraph.o: digraph.cpp
+	$(CC) -c digraph.cpp -o digraph.o $(CFLAGS)
+
+dijkstra.o: dijkstra.cpp dijkstra.h
+	$(CC) -c dijkstra.cpp -o dijkstra.o $(CFLAGS)
 
 clean:
-	@rm $(PROGS) $(OBJS)
+	@rm -f $(PROGS) $(OBJS)
