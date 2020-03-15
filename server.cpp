@@ -19,26 +19,34 @@
 #include <stack>
 #include <string>
 
-const char MAPNAME[] = "edmonton-roads-2.0.1.txt";
-
 using namespace std;
+
+const char MAPNAME[] = "edmonton-roads-2.0.1.txt";
 
 enum State {
     Waiting,
-    Computing,
-    Print
+    CMPUTing, // :)))
+    Print 
 };
 
 struct Point {
-  long long lat; // latitude of the point
-  long long lon; // longitude of the point
+  long long lat; 
+  long long lon; 
 };
 
+typedef stack<Point> sequence;
+typedef pair<int, int> vertex;
 
+/**
+ * Gets the cost between two points based on distance using Manhattan distance.
+ *
+ * @param pt1 The first point
+ * @param pt2 The second point
+ * 
+ * @returns The cost between the two points
+ */
 long long manhattan(const Point& pt1, const Point& pt2) {
-  long long manhattanDistance;
-  manhattanDistance = abs(pt1.lat - pt2.lat) + abs(pt1.lon - pt2.lon);
-  return manhattanDistance;
+  return abs(pt1.lat - pt2.lat) + abs(pt1.lon - pt2.lon);
 }
 
 /**
@@ -46,14 +54,10 @@ long long manhattan(const Point& pt1, const Point& pt2) {
  * the given WDigraph object.
  * Store vertex coordinates in Point struct and map
  * each vertex to its corresponding Point struct.
- * PARAMETERS:
- * filename: name of the file describing a road network
- * graph: an instance of the weighted directed graph (WDigraph) class
- * points: a mapping between vertex identifiers and their coordinates
  *
  * @param filename The name of the file we want to open.
  * @param graph Instance of weighted directed graph class
- * @param points map between coordinates and vertex identifiers
+ * @param points Map between coordinates and vertex identifiers
  */
 void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& points) {
   ifstream file;
@@ -63,7 +67,7 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
   while(!file.eof()) {
     getline(file, current);
 
-    // Check if the line is edge ('E').
+    // Check if the line is edge (`E').
     if (current[0] == 'E') {
       int comma1 = current.find(",", 2);
       int u = stoi(current.substr(2, comma1 - 2));
@@ -71,7 +75,7 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
 
       graph.addEdge(u, v, manhattan(points[u], points[v]));
     }
-    //if line is vertex
+    // Check if line is vertex (`V')
     else if (current[0] == 'V') {
       string j = current.substr(2, current.find(",", 2) - 2);
       graph.addVertex(stoi(j));
@@ -91,53 +95,132 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
   }
 
   file.close();
- }
+}
 
+/**
+ * Finds the shortest path between two points in a given graph using Dijkstra's.
+ *
+ * @param start The starting point
+ * @param end The ending point
+ * @param g The weighted, directed graph to be considered
+ * @param pointMap Map between coordinates and vertex identifiers
+ */
+sequence calcPath(int start, int end, WDigraph &g, unordered_map<int, Point> &pointMap) {
+  // shortest path from start to end stored here
+  sequence path; 
 
+  // stores search tree
+  unordered_map<int, PIL> tree; 
 
+  // generate search tree starting from the start node
+  dijkstra(g, start, tree); 
+
+  // trace the path, starting at the end node
+  int current = end;
+
+  // if the tree contains the end point, then a path exists that we will find.
+  if (tree.find(current) != tree.end()) {
+    // trace the path until it reachs the start, adding each point to the stack.
+    while (current != start) {
+      PIL next = tree[current];
+      path.push(pointMap[current]);
+      current = next.first; 
+    }
+
+    // add the start point to the top of the stack
+    path.push(pointMap[start]);
+  }
+
+  return path;
+}
+
+/**
+ * Finds the closest vertex to the two given points.
+ *
+ * @param a The starting point
+ * @param b The ending point
+ * @param pointMap Map between coordinates and vertex identifiers
+ * 
+ * @returns Vertex that is closest to the two points given.
+ */
+vertex getClosestVertex(Point a, Point b, unordered_map<int, Point> &pointMap) {
+  vertex current = {pointMap.begin()->first, pointMap.begin()->first};
+
+  // iterate through all the points 
+  for (auto it = pointMap.begin(); it != pointMap.end(); it++) {
+    // if the point is closer, update current accordingly
+    if (manhattan(it->second, a) < manhattan(pointMap[current.first], a)) {
+      current.first = it->first;
+    }
+
+    if (manhattan(it->second, b) < manhattan(pointMap[current.second], b)) {
+      current.second = it->first;
+    }   
+  }
+
+  return current;
+}
+
+/**
+ * Main function of program.
+ */
 int main() {
-  State currentState = Waiting;
-  string action;
-  Point beginning;
+  State state = Waiting;
+  
+  Point start;
   Point end;
+
+  sequence path;
 
   WDigraph graph;
   unordered_map<int, Point> pointMap;
   readGraph(MAPNAME, graph, pointMap);
 
   while(true) {
-    if (currentState == Waiting) {
-      cin >> action;
+    // State: waiting for input.
+    if (state == Waiting) {
+      char action; cin >> action;
+
       if (action == 'R') {
-        cin >> beginning.lat;
-        cin >> beginning.lon;
+        cin >> start.lat;
+        cin >> start.lon;
         cin >> end.lat;
         cin >> end.lon;
-        currentState == Computing;
+
+        state = CMPUTing;
       }
     }
-    else if (currentState == Computing) {
-      auto vertex = getVertices(beginning, end, pointMap);
-      path = getPath(vertex.first, vertex.second, graph, pointMap);
-      currentState == Print;
+    // State: calculating path.
+    else if (state == CMPUTing) {
+      vertex v = getClosestVertex(start, end, pointMap);
+      path = calcPath(v.first, v.second, graph, pointMap);
+
+      state = Print;
     }
-    else if (currentState == Print) {
+    // State: output result.
+    else if (state == Print) {
       string acknowledge;
-      cout << "N " << path.size() << endl;
+      cout << "N " << path.size() << endl; // Start of output
+
+      // if the path is not empty
       if (path.empty() == false) {
+        Point current;
         cin >> acknowledge;
+
+        // iterate through each point in the path stack
         while (acknowledge == "A" && path.empty() == false) {
-          Point current = path.top();
+          current = path.top();
           path.pop();
           cout << "W " << current.lat << " " << current.lon << endl;
           cin >> acknowledge;
-
         }
-        cout << "E" << endl;
+
+        cout << "E" << endl; // End of output
       }
-      delete path;
-      break;
+
+      break; // Done. Break out of loop.
     }
   }
+
   return 0;
 }

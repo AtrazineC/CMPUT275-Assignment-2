@@ -10,15 +10,25 @@
     ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##:
 ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::
 
-
 Included Files:
 	* server.cpp
 	* heap.h
 	* dijkstra.cpp
 	* dijkstra.h
+    * digraph.cpp
+    * digraph.h
+    * wdigraph.h
+    * edmonton-roads-2.0.1.txt
 	* Makefile
 
 Running Instructions:
     1. Open the terminal in the folder containing the files.
     2. Run the command "make" in the terminal.
+    3. Run "./server" to run the server executable.
   
+Makefile targets:
+    * make (server): generates the server executable.
+    * make server.o: compiles server.o.
+    * make digraph.o: compiles digraph.o.
+    * make dijkstra.o: compiles dijkstra.o.
+    * make clean: removes all objects and executables.
