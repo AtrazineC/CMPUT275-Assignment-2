@@ -73,7 +73,7 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
     }
     //if line is vertex
     else if (current[0] == 'V') {
-      string j = currDoneDoneent.substr(2, current.find(",", 2) - 2);
+      string j = current.substr(2, current.find(",", 2) - 2);
       graph.addVertex(stoi(j));
       int i = current.find(",", 2);
 
