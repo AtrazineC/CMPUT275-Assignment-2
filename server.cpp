@@ -23,6 +23,12 @@ const char MAPNAME[] = "edmonton-roads-2.0.1.txt";
 
 using namespace std;
 
+enum State {
+    Waiting,
+    Computing,
+    Print
+};
+
 struct Point {
   long long lat; // latitude of the point
   long long lon; // longitude of the point
@@ -128,10 +134,49 @@ stack<Point> calcPath(int start, int end, WDigraph &g, unordered_map<int, Point>
 }
 
 
-int main() { 
+int main() {
+  State currentState = Waiting;
+  string action;
+  Point beginning;
+  Point end;
+
   WDigraph graph;
   unordered_map<int, Point> pointMap;
   readGraph(MAPNAME, graph, pointMap);
 
+  while(true) {
+    if (currentState == Waiting) {
+      cin >> action;
+      if (action == 'R') {
+        cin >> beginning.lat;
+        cin >> beginning.lon;
+        cin >> end.lat;
+        cin >> end.lon;
+        currentState == Computing;
+      }
+    }
+    else if (currentState == Computing) {
+      auto vertex = getVertices(beginning, end, pointMap);
+      path = getPath(vertex.first, vertex.second, graph, pointMap);
+      currentState == Print;
+    }
+    else if (currentState == Print) {
+      string acknowledge;
+      cout << "N " << path.size() << endl;
+      if (path.empty() == false) {
+        cin >> acknowledge;
+        while (acknowledge == "A" && path.empty() == false) {
+          Point current = path.top();
+          path.pop();
+          cout << "W " << current.lat << " " << current.lon << endl;
+          cin >> acknowledge;
+
+        }
+        cout << "E" << endl;
+      }
+      delete path;
+      break;
+    }
+  }
   return 0;
 }
