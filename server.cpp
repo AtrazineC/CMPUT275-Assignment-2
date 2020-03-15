@@ -72,7 +72,7 @@ void readGraph(string filename, WDigraph& graph, unordered_map<int, Point>& poin
       graph.addEdge(u, v, manhattan(points[u], points[v]));
     }
     //if line is vertex
-    else if (currDoneent[0] == 'V') {
+    else if (current[0] == 'V') {
       string j = currDoneDoneent.substr(2, current.find(",", 2) - 2);
       graph.addVertex(stoi(j));
       int i = current.find(",", 2);
