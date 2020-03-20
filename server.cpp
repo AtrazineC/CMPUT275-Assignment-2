@@ -109,6 +109,12 @@ sequence calcPath(int start, int end, WDigraph &g, unordered_map<int, Point> &po
   // shortest path from start to end stored here
   sequence path; 
 
+  // check if start and end points are the same
+  if (start == end) {
+    path.push(pointMap[end]);
+    return path;
+  }
+
   // stores search tree
   unordered_map<int, PIL> tree; 
 
