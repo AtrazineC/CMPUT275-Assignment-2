@@ -14,24 +14,24 @@ Acknolwedgements:
     * Several files were provided from eClass for our solution.
 
 ///////////////////////////////////////////////////////////////////////////////
-// Client Information (located in Arduino/) 
+// Client Information (located in client/) 
 ///////////////////////////////////////////////////////////////////////////////
 
 Included Files:
-    * Arduino/client.cpp
-    * Arduino/const_and_types.h
-    * Arduino/draw_route.cpp
-    * Arduino/draw_route.h
-    * Arduino/lcd_image.cpp
-    * Arduino/lcd_image.h
-    * Arduino/Makefile
-    * Arduino/map_drawing.cpp
-    * Arduino/map_drawing.h
-    * Arduino/serial_handling.cpp
-    * Arduino/serial_handling.h
+    * client/client.cpp
+    * client/const_and_types.h
+    * client/draw_route.cpp
+    * client/draw_route.h
+    * client/lcd_image.cpp
+    * client/lcd_image.h
+    * client/Makefile
+    * client/map_drawing.cpp
+    * client/map_drawing.h
+    * client/serial_handling.cpp
+    * client/serial_handling.h
 
 Running Instructions:
-    1. Open the terminal in Arduino/.
+    1. Open the terminal in client/.
     2. Compile and upload the files by running "make upload".
     3. Use the joystick to move around the map.
     4. Press the buttons to zoom in/out.
@@ -49,24 +49,24 @@ Wiring Instructions:
     * Mount the TFT display on the Arduino.
 
 ///////////////////////////////////////////////////////////////////////////////
-// Server Information (located in Server/) 
+// Server Information (located in server/) 
 ///////////////////////////////////////////////////////////////////////////////
 
 Included Files:
-    * Server/server.cpp
-    * Server/heap.h
-    * Server/dijkstra.cpp
-    * Server/dijkstra.h
-    * Server/digraph.cpp
-    * Server/digraph.h
-    * Server/wdigraph.h
-    * Server/edmonton-roads-2.0.1.txt
-    * Server/Makefile
-    * Server/serialport.cpp
-    * Server/serialport.h
+    * server/server.cpp
+    * server/heap.h
+    * server/dijkstra.cpp
+    * server/dijkstra.h
+    * server/digraph.cpp
+    * server/digraph.h
+    * server/wdigraph.h
+    * server/edmonton-roads-2.0.1.txt
+    * server/Makefile
+    * server/serialport.cpp
+    * server/serialport.h
 
 Running Instructions:
-    1. Open the terminal in Server/.
+    1. Open the terminal in server/.
     2. Run the command "make" in the terminal.
     3. Make sure the client (Arduino) is already running.
     4. Run "./server" to run the server executable.
