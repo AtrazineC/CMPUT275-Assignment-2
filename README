@@ -5,30 +5,75 @@
 ##::                            Lora Ma -------- 1570935
     ##::
 ##::        CMPUT 275:          Winter 2020
-    ##::    Assignment 2:       Part 1
+    ##::    Assignment 2:       Part 2
 ##::
     ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##:
 ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::    ##::
 
+Acknolwedgements:
+    * Several files were provided from eClass for our solution.
+
+///////////////////////////////////////////////////////////////////////////////
+// Client Information (located in Arduino/) 
+///////////////////////////////////////////////////////////////////////////////
+
 Included Files:
-	* server.cpp
-	* heap.h
-	* dijkstra.cpp
-	* dijkstra.h
-    * digraph.cpp
-    * digraph.h
-    * wdigraph.h
-    * edmonton-roads-2.0.1.txt
-	* Makefile
+    * Arduino/client.cpp
+    * Arduino/const_and_types.h
+    * Arduino/draw_route.cpp
+    * Arduino/draw_route.h
+    * Arduino/lcd_image.cpp
+    * Arduino/lcd_image.h
+    * Arduino/Makefile
+    * Arduino/map_drawing.cpp
+    * Arduino/map_drawing.h
+    * Arduino/serial_handling.cpp
+    * Arduino/serial_handling.h
 
 Running Instructions:
-    1. Open the terminal in the folder containing the files.
+    1. Open the terminal in Arduino/.
+    2. Compile and upload the files by running "make upload".
+    3. Use the joystick to move around the map.
+    4. Press the buttons to zoom in/out.
+    5. Press the joystick to set a starting point.
+    6. Press the joystick again to set a destination.
+
+Wiring Instructions:
+    * Arduino Analog Port A8 --> Joystick Vry.
+    * Arduino Analog Port A9 --> Joystick Vrx.
+    * Arduino Digital Pin 53 --> Joystick SW.
+    * Arduino 5V Port --> Joystick 5V.
+    * Arduino GND --> Joystick GND.
+    * Arduino Digital Pin 45 --> Button (for zooming in).
+    * Arduino Digital Pin 47 --> Button (for zooming out).
+    * Mount the TFT display on the Arduino.
+
+///////////////////////////////////////////////////////////////////////////////
+// Server Information (located in Server/) 
+///////////////////////////////////////////////////////////////////////////////
+
+Included Files:
+    * Server/server.cpp
+    * Server/heap.h
+    * Server/dijkstra.cpp
+    * Server/dijkstra.h
+    * Server/digraph.cpp
+    * Server/digraph.h
+    * Server/wdigraph.h
+    * Server/edmonton-roads-2.0.1.txt
+    * Server/Makefile
+    * Server/serialport.cpp
+    * Server/serialport.h
+
+Running Instructions:
+    1. Open the terminal in Server/.
     2. Run the command "make" in the terminal.
-    3. Run "./server" to run the server executable.
+    3. Make sure the client (Arduino) is already running.
+    4. Run "./server" to run the server executable.
   
 Makefile targets:
     * make (server): generates the server executable.
     * make server.o: compiles server.o.
-    * make digraph.o: compiles digraph.o.
     * make dijkstra.o: compiles dijkstra.o.
+    * make digraph.o: compiles digraph.o.
     * make clean: removes all objects and executables.

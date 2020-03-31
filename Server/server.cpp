@@ -5,28 +5,31 @@
 //::                            Lora Ma -------- 1570935
     //::
 //::        CMPUT 275:          Winter 2020
-    //::    Assignment 2:       Part 1
+    //::    Assignment 2:       Part 2
 //::
     //::    //::    //::    //::    //::    //::    //::    //::    //::    //:
 //::    //::    //::    //::    //::    //::    //::    //::    //::    //::
 
-#include "wdigraph.h"
-#include "dijkstra.h"
 #include <iostream>
 #include <cmath>
 #include <fstream>
 #include <stdlib.h>
 #include <stack>
+#include <queue>
 #include <string>
+#include <algorithm>
+#include "wdigraph.h"
+#include "dijkstra.h"
+#include "serialport.h"
 
 using namespace std;
 
 const char MAPNAME[] = "edmonton-roads-2.0.1.txt";
 
 enum State {
-    Waiting,
-    CMPUTing, // :)))
-    Print 
+  Waiting,
+  CMPUTing, // :)))
+  Print 
 };
 
 struct Point {
@@ -168,6 +171,27 @@ vertex getClosestVertex(Point a, Point b, unordered_map<int, Point> &pointMap) {
 }
 
 /**
+ * Reads a line of input from the Arduino and writes the commands into a queue
+ * that is passed in by reference.
+ *
+ * @param line The line of input read from the Arduino (client)
+ * @param items A pass by reference queue that stores the inputs once they
+ *              have been parsed
+ */
+void interpretLine(string line, queue<string>& items) {
+  auto current_start = line.begin();
+  auto current_end = find(current_start, line.end(), ' ');
+
+  while (current_end != line.end()) {
+    items.push(string(current_start, current_end));
+    current_start = current_end + 1; // move to next item
+    current_end = find(current_start, line.end(), ' ');
+  }
+
+  items.push(string(current_start, current_end));
+}
+
+/**
  * Main function of program.
  */
 int main() {
@@ -182,16 +206,27 @@ int main() {
   unordered_map<int, Point> pointMap;
   readGraph(MAPNAME, graph, pointMap);
 
+  SerialPort client; // assumes arduino connected to /dev/ttyACM0
+  int max_timeout = 1000; // 1000 ms timeout
+
   while(true) {
     // State: waiting for input.
     if (state == Waiting) {
-      char action; cin >> action;
+      // Read in the line from the client and interpret it into the start and 
+      // end points
+      string line = client.readline(max_timeout);
+      queue<string> Q;
 
-      if (action == 'R') {
-        cin >> start.lat;
-        cin >> start.lon;
-        cin >> end.lat;
-        cin >> end.lon;
+      interpretLine(line, Q);
+
+      string action = Q.front(); Q.pop();
+      
+      if (action == "R") {
+        // stoll converts a string to long long
+        start.lat = stoll(Q.front()); Q.pop(); 
+        start.lon = stoll(Q.front()); Q.pop();
+        end.lat = stoll(Q.front()); Q.pop(); 
+        end.lon = stoll(Q.front()); Q.pop();
 
         state = CMPUTing;
       }
@@ -206,25 +241,35 @@ int main() {
     // State: output result.
     else if (state == Print) {
       string acknowledge;
-      cout << "N " << path.size() << endl; // Start of output
+      client.writeline("N ");
+      client.writeline(to_string(path.size()));
+      client.writeline("\n");
 
       // if the path is not empty
-      if (path.empty() == false) {
+      if (!path.empty()) {
         Point current;
-        cin >> acknowledge;
+        acknowledge = client.readline(max_timeout);
 
         // iterate through each point in the path stack
-        while (acknowledge == "A" && path.empty() == false) {
-          current = path.top();
-          path.pop();
-          cout << "W " << current.lat << " " << current.lon << endl;
-          cin >> acknowledge;
+        while (!path.empty()) {
+          if (acknowledge[0] == 'A') {
+            current = path.top();
+            path.pop();
+
+            client.writeline("W ");
+            client.writeline(to_string(current.lat));
+            client.writeline(" ");
+            client.writeline(to_string(current.lon));
+            client.writeline("\n");
+          }
+          
+          acknowledge = client.readline(max_timeout);
         }
 
-        cout << "E" << endl; // End of output
+        client.writeline("E\n"); // End of output
       }
 
-      break; // Done. Break out of loop.
+      state = Waiting;
     }
   }
 
